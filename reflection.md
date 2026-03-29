@@ -57,6 +57,8 @@ Scheduler: The "Brain" that retrieves, organizes, and manages tasks across pets.
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
 
+One tradeoff is that conflict detection only checks **exact matching datetimes** instead of overlapping time windows. This makes the algorithm simple and fast to reason about (group by timestamp and flag groups larger than one), which is reasonable for a beginner-friendly pet-care scheduler where tasks are short and usually anchored to specific times.
+
 ---
 
 ## 3. AI Collaboration

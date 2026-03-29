@@ -16,8 +16,8 @@
 #  Copilot to use Python Dataclasses for objects like Task and Pet to keep your code clean.
 
 from dataclasses import dataclass, field
-from datetime import date, datetime
-from typing import List
+from datetime import date, datetime, timedelta
+from typing import Dict, List, Optional, Tuple
 
 
 @dataclass
@@ -110,6 +110,35 @@ class Owner:
 
 
 class Scheduler:
+	def sort_by_time(self, tasks: List[Task]) -> List[Task]:
+		"""
+		Returns a new list of Task objects sorted by scheduled_time.
+		"""
+		return sorted(tasks, key=lambda task: task.scheduled_time)
+
+	def filter_tasks(
+		self,
+		owner: Owner,
+		pet_name: Optional[str] = None,
+		completed: Optional[bool] = None,
+	) -> List[Task]:
+		"""
+		Returns tasks filtered by optional pet name and completion status.
+
+		If pet_name is provided, matching is case-insensitive. If completed is
+		provided, only tasks with that completion state are returned.
+		"""
+		filtered: List[Task] = []
+		for pet in owner.pets:
+			if pet_name is not None and pet.name.lower() != pet_name.lower():
+				continue
+			for task in pet.tasks:
+				if completed is not None and task.completed != completed:
+					continue
+				filtered.append(task)
+
+		return self.sort_by_time(filtered)
+
 	def collect_tasks(self, owner: Owner) -> List[Task]:
 		"""
 		Returns a list of all Task objects associated with the pets owned by the
@@ -127,6 +156,66 @@ class Scheduler:
 		scheduled_time, returning the ordered list.
 		"""
 		return sorted(tasks, key=lambda task: (task.completed, task.scheduled_time))
+
+	def mark_task_complete(self, pet: Pet, task: Task) -> Optional[Task]:
+		"""
+		Marks a task complete and auto-creates the next recurring task when the
+		frequency is daily or weekly.
+
+		Returns the newly created recurring task, or None when no new task is
+		created.
+		"""
+		if task not in pet.tasks:
+			raise ValueError(f"Task '{task.description}' not found for pet '{pet.name}'.")
+
+		if task.completed:
+			return None
+
+		task.mark_complete()
+
+		frequency = task.frequency.strip().lower()
+		next_time: Optional[datetime] = None
+		if frequency == "daily":
+			next_time = task.scheduled_time + timedelta(days=1)
+		elif frequency == "weekly":
+			next_time = task.scheduled_time + timedelta(weeks=1)
+
+		if next_time is None:
+			return None
+
+		next_task = Task(
+			description=task.description,
+			scheduled_time=next_time,
+			frequency=task.frequency,
+		)
+		pet.add_task(next_task)
+		return next_task
+
+	def detect_conflicts(self, owner: Owner) -> List[str]:
+		"""
+		Returns warning messages for tasks that share the exact same scheduled
+		time across all pets.
+
+		This is a lightweight strategy and only checks exact datetime matches.
+		"""
+		time_buckets: Dict[datetime, List[Tuple[str, Task]]] = {}
+		for pet in owner.pets:
+			for task in pet.tasks:
+				time_buckets.setdefault(task.scheduled_time, []).append((pet.name, task))
+
+		warnings: List[str] = []
+		for conflict_time, scheduled_items in sorted(time_buckets.items(), key=lambda item: item[0]):
+			if len(scheduled_items) < 2:
+				continue
+
+			details = ", ".join(
+				f"{pet_name}: {task.description}" for pet_name, task in scheduled_items
+			)
+			warnings.append(
+				f"Conflict at {conflict_time.strftime('%Y-%m-%d %I:%M %p')} -> {details}"
+			)
+
+		return warnings
 
 	def today_plan(self, owner: Owner) -> List[Task]:
 		"""
