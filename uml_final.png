@@ -1,0 +1,3 @@
+Unknown serde type: classDiagram
+    class Owner {
+        -name

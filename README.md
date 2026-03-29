@@ -51,6 +51,24 @@ PawPal+ now includes a smarter algorithmic layer in the scheduler:
 - **Recurring task automation** for daily/weekly items when marked complete
 - **Lightweight conflict detection** that warns when two tasks share the exact same time
 
+## Features
+
+- Owner and pet management with persistent in-session state in Streamlit
+- Task creation with schedule time and recurrence frequency
+- Scheduler-powered sorting (`sort_by_time`) and filtering (`filter_tasks`)
+- Automated recurrence when completing daily/weekly tasks (`mark_task_complete`)
+- Lightweight exact-time conflict warnings (`detect_conflicts`)
+- Daily planning view using backend scheduling logic (`today_plan`)
+
+## 📸 Demo
+
+<a href="/course_images/ai110/pawpal_app.png" target="_blank"><img src='/course_images/ai110/pawpal_app.png' title='PawPal App' width='' alt='PawPal App' class='center-block' /></a>
+
+## Architecture Diagram
+
+- Final Mermaid source: [Mermaid.js.md](Mermaid.js.md)
+- Exported diagram image: [uml_final.png](uml_final.png)
+
 ## Testing PawPal+
 
 Run the automated test suite with:

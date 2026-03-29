@@ -159,11 +159,93 @@ all_tasks = [
     for task in pet.tasks
 ]
 
+st.markdown("### Task Explorer")
+st.caption("View tasks with scheduler-based sorting and filtering.")
+
+pet_filter_options = ["All pets"] + [pet.name for pet in owner.pets]
+selected_filter_pet = st.selectbox("Filter by pet", pet_filter_options)
+selected_filter_status = st.selectbox("Filter by status", ["All", "Incomplete", "Completed"])
+
+status_map = {
+    "All": None,
+    "Incomplete": False,
+    "Completed": True,
+}
+
+if selected_filter_pet == "All pets":
+    filtered_tasks = scheduler.sort_by_time(scheduler.collect_tasks(owner))
+    completed_filter_value = status_map[selected_filter_status]
+    if completed_filter_value is not None:
+        filtered_tasks = [task for task in filtered_tasks if task.completed == completed_filter_value]
+else:
+    filtered_tasks = scheduler.filter_tasks(
+        owner,
+        pet_name=selected_filter_pet,
+        completed=status_map[selected_filter_status],
+    )
+
+def pet_name_for_task(task: Task) -> str:
+    for pet in owner.pets:
+        if task in pet.tasks:
+            return pet.name
+    return "Unknown"
+
+if filtered_tasks:
+    st.success(f"Showing {len(filtered_tasks)} task(s).")
+    st.table(
+        [
+            {
+                "pet": pet_name_for_task(task),
+                "task": task.description,
+                "time": task.scheduled_time.strftime("%Y-%m-%d %I:%M %p"),
+                "frequency": task.frequency,
+                "completed": task.completed,
+            }
+            for task in filtered_tasks
+        ]
+    )
+else:
+    st.info("No tasks match the selected filters.")
+
 if all_tasks:
-    st.write("Current tasks:")
-    st.table(all_tasks)
+    st.markdown("### Complete a Task")
+    incomplete_pairs = [
+        (pet, task)
+        for pet in owner.pets
+        for task in pet.tasks
+        if not task.completed
+    ]
+
+    if incomplete_pairs:
+        task_labels = [
+            f"{pet.name} | {task.description} | {task.scheduled_time.strftime('%Y-%m-%d %I:%M %p')} | {task.frequency}"
+            for pet, task in incomplete_pairs
+        ]
+        selected_task_label = st.selectbox("Select task to mark complete", task_labels)
+
+        if st.button("Mark selected task complete"):
+            selected_index = task_labels.index(selected_task_label)
+            selected_pet, selected_task = incomplete_pairs[selected_index]
+            next_task = scheduler.mark_task_complete(selected_pet, selected_task)
+            st.success(f"Marked complete: {selected_task.description} for {selected_pet.name}.")
+            if next_task is not None:
+                st.info(
+                    "Recurring task created for "
+                    f"{next_task.scheduled_time.strftime('%Y-%m-%d %I:%M %p')}."
+                )
+            st.rerun()
+    else:
+        st.info("All tasks are already completed.")
 else:
     st.info("No tasks yet. Add one above.")
+
+st.markdown("### Conflict Warnings")
+conflict_warnings = scheduler.detect_conflicts(owner)
+if conflict_warnings:
+    for warning in conflict_warnings:
+        st.warning(warning)
+else:
+    st.success("No schedule conflicts detected.")
 
 st.divider()
 
