@@ -50,3 +50,21 @@ PawPal+ now includes a smarter algorithmic layer in the scheduler:
 - **Task filtering** by pet name and completion status
 - **Recurring task automation** for daily/weekly items when marked complete
 - **Lightweight conflict detection** that warns when two tasks share the exact same time
+
+## Testing PawPal+
+
+Run the automated test suite with:
+
+```bash
+python -m pytest
+```
+
+The tests cover:
+
+- Task completion and task creation behavior
+- Chronological sorting and filtering by pet/completion state
+- Recurring task creation when completing daily tasks
+- Conflict detection for duplicate times and no-conflict paths
+- Edge cases such as pets with no tasks and one-time tasks
+
+**Confidence Level:** ⭐⭐⭐⭐⭐ (5/5) based on passing automated tests for core and edge scheduling flows.

@@ -89,3 +89,42 @@ def test_detect_conflicts_returns_warning_for_same_time() -> None:
 	assert "Conflict" in conflicts[0]
 	assert "Buddy: Morning walk" in conflicts[0]
 	assert "Luna: Morning meds" in conflicts[0]
+
+
+def test_today_plan_returns_empty_for_pet_with_no_tasks() -> None:
+	owner = Owner("Alex")
+	owner.add_pet(Pet(name="Buddy", species="Dog", age=4))
+	scheduler = Scheduler()
+
+	assert scheduler.today_plan(owner) == []
+
+
+def test_mark_task_complete_once_does_not_create_new_task() -> None:
+	scheduler = Scheduler()
+	pet = Pet(name="Buddy", species="Dog", age=4)
+	task = Task(
+		description="Vet appointment",
+		scheduled_time=datetime(2026, 3, 29, 10, 0),
+		frequency="once",
+	)
+	pet.add_task(task)
+
+	next_task = scheduler.mark_task_complete(pet, task)
+
+	assert task.completed is True
+	assert next_task is None
+	assert len(pet.tasks) == 1
+
+
+def test_detect_conflicts_returns_empty_when_no_duplicate_times() -> None:
+	owner = Owner("Alex")
+	buddy = Pet(name="Buddy", species="Dog", age=4)
+	luna = Pet(name="Luna", species="Dog", age=2)
+	owner.add_pet(buddy)
+	owner.add_pet(luna)
+	scheduler = Scheduler()
+
+	buddy.add_task(Task(description="Morning walk", scheduled_time=datetime(2026, 3, 29, 8, 0), frequency="daily"))
+	luna.add_task(Task(description="Morning meds", scheduled_time=datetime(2026, 3, 29, 9, 0), frequency="daily"))
+
+	assert scheduler.detect_conflicts(owner) == []
