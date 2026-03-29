@@ -5,7 +5,19 @@
 **a. Initial design**
 
 - Briefly describe your initial UML design.
+The scheduluer controls User and indirectly iteracts with and organizes
+
+
+
 - What classes did you include, and what responsibilities did you assign to each?
+Classes: User, Scheduler, Pet and Task
+
+Responsibilities:
+User - adds pets, schedules walks, and views today's tasks.
+Scheduler - collects and sorts tasks across all pets.
+Pet - stores pet info and its task list.
+Task - stores one activity's details and completion status.
+
 
 Copilot Instructions: 
  Copilot to create a Mermaid.js class diagram based on your brainstormed attributes and methods.
