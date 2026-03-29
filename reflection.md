@@ -7,6 +7,25 @@
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
 
+Copilot Instructions: 
+ Copilot to create a Mermaid.js class diagram based on your brainstormed attributes and methods.
+
+User
+three core actions a user should be able to perform:
+ 1) add a pet
+ 2) schedule a walk
+ 3) see today's tasks
+
+
+UML Relations:
+Owner has Pets --> This means an owner should have pets attribute
+
+Task: Represents a single activity (description, time, frequency, completion status).
+Pet: Stores pet details and a list of tasks.
+
+Owner: Manages multiple pets and provides access to all their tasks.
+Scheduler: The "Brain" that retrieves, organizes, and manages tasks across pets.
+
 **b. Design changes**
 
 - Did your design change during implementation?
