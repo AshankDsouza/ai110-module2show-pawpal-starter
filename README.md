@@ -62,7 +62,7 @@ PawPal+ now includes a smarter algorithmic layer in the scheduler:
 
 ## 📸 Demo
 
-<a href="/course_images/ai110/pawpal_app.png" target="_blank"><img src='/course_images/ai110/pawpal_app.png' title='PawPal App' width='' alt='PawPal App' class='center-block' /></a>
+<a href="image.png" target="_blank"><img src='image.png' title='PawPal App' width='' alt='PawPal App' class='center-block' /></a>
 
 ## Architecture Diagram
 
