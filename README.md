@@ -62,12 +62,12 @@ PawPal+ now includes a smarter algorithmic layer in the scheduler:
 
 ## 📸 Demo
 
-<a href="image.png" target="_blank"><img src='image.png' title='PawPal App' width='' alt='PawPal App' class='center-block' /></a>
+<a href="course_images/image.png" target="_blank"><img src='course_images/image.png' title='PawPal App' width='' alt='PawPal App' class='center-block' /></a>
 
 ## Architecture Diagram
 
 - Final Mermaid source: [Mermaid.js.md](Mermaid.js.md)
-- Exported diagram image: [uml_final.png](uml_final.png)
+- Exported diagram image: [course_images/uml_final.png](course_images/uml_final.png)
 
 ## Testing PawPal+
 
