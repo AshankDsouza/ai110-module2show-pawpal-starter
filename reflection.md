@@ -43,7 +43,7 @@ Scheduler: The "Brain" that retrieves, organizes, and manages tasks across pets.
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
 
-Yes. I renamed `User` to `Owner` to better match the scenario language and made the responsibilities clearer. I also expanded `Scheduler` beyond simple aggregation/sorting by adding `filter_tasks`, `mark_task_complete`, and `detect_conflicts`. This change happened because once I started implementing real scheduling behavior, it was cleaner to keep algorithmic decisions in one class rather than scattering them across UI code.
+ I also expanded Scheduler beyond simple aggregation/sorting by adding filter_tasks, mark_task_complete, and detect_conflicts. The new changes with respect to algorithms was made to make the scheduling cleaner and keep the logic part away from the UI part. 
 
 ---
 
@@ -54,13 +54,7 @@ Yes. I renamed `User` to `Owner` to better match the scenario language and made 
 - What constraints does your scheduler consider (for example: time, priority, preferences)?
 - How did you decide which constraints mattered most?
 
-My scheduler currently considers:
-
-- task date/time ordering
-- completion status
-- pet-based filtering
-- recurrence frequency (`daily`, `weekly`, `monthly`, `once`)
-- exact-time conflicts across all pets
+My scheduler currently considers: time, completion status and time conflicts. 
 
 I prioritized these because they map directly to the core owner workflow: know what is due, in what order, and whether schedule collisions exist.
 
@@ -69,7 +63,7 @@ I prioritized these because they map directly to the core owner workflow: know w
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
 
-One tradeoff is that conflict detection only checks **exact matching datetimes** instead of overlapping time windows. This makes the algorithm simple and fast to reason about (group by timestamp and flag groups larger than one), which is reasonable for a beginner-friendly pet-care scheduler where tasks are short and usually anchored to specific times.
+One tradeoff is that conflict detection only checks instead of overlapping time windows. This makes the algorithm simple and fast to reason about.
 
 ---
 
@@ -80,20 +74,16 @@ One tradeoff is that conflict detection only checks **exact matching datetimes**
 - How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
 - What kinds of prompts or questions were most helpful?
 
-I used Copilot for planning, implementation drafts, and test expansion. The most useful prompts were specific and constraint-driven, for example:
+I used Copilot for testing (generate tests), making the skeleton, making meaningful commits (generate commits) and also for the in code documentation (docstring). 
 
-- "Add a lightweight conflict detection strategy that returns warnings, not errors."
-- "Implement recurring task creation when a daily/weekly task is completed."
-- "Suggest edge cases for scheduler tests."
-
-I also used separate chat focus by phase (implementation vs testing vs documentation), which reduced context switching and kept decisions organized.
+I also used separate chat focus by phase, which avoided confusing Copilot. 
 
 **b. Judgment and verification**
 
 - Describe one moment where you did not accept an AI suggestion as-is.
 - How did you evaluate or verify what the AI suggested?
 
-One AI suggestion favored a compact list-comprehension-heavy filter implementation. I modified it to a more explicit loop-based version because readability was more important for this project. I verified behavior by adding focused tests for filtering and re-running `pytest` after the refactor.
+AI could not make the images. I had to do this manually. Also, Copilot did not recommened to use clean image organization (keeping images in its own folder), I decided to do this even though i did not get any prompt from the AI. 
 
 ---
 
@@ -105,30 +95,27 @@ One AI suggestion favored a compact list-comprehension-heavy filter implementati
 - Why were these tests important?
 
 I tested:
+ 1) task completion state updates
+ 2) adding tasks to pets
+ 3) sorting tasks by time
+ 4) conflict detection for duplicate times
 
-- task completion state updates
-- adding tasks to pets
-- sorting tasks by time
-- filtering by pet/status
-- recurring task creation for daily completion
-- conflict detection for duplicate times
-- no-task and no-conflict edge cases
+and others as well.
 
-These tests were important because each one protects a core user-facing behavior from regressions and confirms the scheduler logic is deterministic.
+These tests were important because now we can refactor and extend the code and avoid breaking correct behaviour. 
 
 **b. Confidence**
 
 - How confident are you that your scheduler works correctly?
 - What edge cases would you test next if you had more time?
 
-Confidence: **5/5** for current scope, based on passing automated tests and manual CLI checks.
+Confidence: Very high for current scope, based on passing automated tests and manual CLI checks.
 
 Next edge cases I would test:
 
-- monthly recurrence behavior around short months
-- timezone-aware datetime handling
-- duplicate pets with same name validation
-- conflict detection for overlapping durations (not just exact start times)
+1) Duplicate names 
+2) Pet owning conditions like should own at least one pet
+3) State management --invalid states should not be reachable(negative no. of pets, negative no. of tasks)
 
 ---
 
@@ -138,16 +125,16 @@ Next edge cases I would test:
 
 - What part of this project are you most satisfied with?
 
-I am most satisfied with keeping scheduling logic centralized in `Scheduler` while still exposing it clearly in the Streamlit UI.
+I am most satisfied with keeping scheduling logic centralized in `Scheduler` and keeping UI logic separate -- this follows separation of concerns keeping things clean and extensible for future modeifications. 
 
 **b. What you would improve**
 
 - If you had another iteration, what would you improve or redesign?
 
-I would add task durations and priority weights, then upgrade conflict detection from exact timestamp matching to interval overlap detection.
+I would add task durations and task priority. 
 
 **c. Key takeaway**
 
 - What is one important thing you learned about designing systems or working with AI on this project?
 
-The key takeaway is that AI accelerates coding, but the human still has to be the lead architect: define boundaries, enforce readability, and verify correctness with tests.
+Testing is important. And we can check for correct behaviour by writing tests and also we can use tests as a prompt and additional context that is affored to the AI. 
